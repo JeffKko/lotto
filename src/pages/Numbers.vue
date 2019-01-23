@@ -8,7 +8,7 @@
       <q-list>
         <q-item :key="'item' + index" v-for="(item, index) in normal">
           <q-item-side>
-            <q-item-tile color="primary" icon="stars" />
+            <q-item-tile color="secondary" icon="stars" />
           </q-item-side>
           <q-item-main>
             {{item}}
@@ -24,10 +24,10 @@
       <q-list>
         <q-item>
           <q-item-side>
-            <q-item-tile color="primary" icon="stars" />
+            <q-item-tile color="secondary" icon="stars" />
           </q-item-side>
           <q-item-main>
-            2133
+            {{special}}
           </q-item-main>
         </q-item>
       </q-list>
@@ -45,12 +45,12 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      normal: [],
+      normal: null,
       special: null
     }
   },
   beforeRouteEnter (to, from, next) {
-    axios.get('test.json')
+    axios.get('numbers.json')
       .then((response) => {
         next(vm => {
           vm.normal = response.data.normal

@@ -60,7 +60,7 @@
     <q-ajax-bar position="top" size="4px"/>
 
     <q-page-container>
-      <router-view style="padding-bottom:50px;"/>
+      <router-view style="padding-bottom:60px;"/>
     </q-page-container>
 
     <q-layout-footer>
