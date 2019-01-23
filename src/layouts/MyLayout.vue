@@ -6,7 +6,7 @@
         :glossy="$q.theme === 'mat'"
         :inverted="$q.theme === 'ios'"
       >
-        <q-btn
+        <!-- <q-btn
           flat
           dense
           round
@@ -14,11 +14,11 @@
           aria-label="Menu"
         >
           <q-icon name="menu" />
-        </q-btn>
+        </q-btn> -->
 
         <q-toolbar-title>
-          Quasar App
-          <div slot="subtitle">Running on Quasar v{{ $q.version }}</div>
+          露天盛典 THE RUTERFEST
+          <!-- <div slot="subtitle">露星彩</div> -->
         </q-toolbar-title>
       </q-toolbar>
 

@@ -2,13 +2,13 @@
   <q-page class="flex flex-center">
     <q-card style="width: 80vw;">
       <q-card-title>
-        第一期
+        開獎號碼
       </q-card-title>
       <q-card-separator />
       <q-list>
         <q-item :key="'item' + index" v-for="(item, index) in normal">
           <q-item-side>
-            <q-item-tile color="secondary" icon="stars" />
+            <q-item-tile color="amber-9" icon="stars" />
           </q-item-side>
           <q-item-main>
             {{item}}
@@ -24,7 +24,7 @@
       <q-list>
         <q-item>
           <q-item-side>
-            <q-item-tile color="secondary" icon="stars" />
+            <q-item-tile color="amber-9" icon="stars" />
           </q-item-side>
           <q-item-main>
             {{special}}
@@ -50,29 +50,12 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
-    axios.get('numbers.json')
+    axios.get(`numbers.json?${new Date().getTime()}`)
       .then((response) => {
         next(vm => {
           vm.normal = response.data.normal
           vm.special = response.data.special
         })
-      })
-      .catch(() => {
-        next()
-        // this.$q.notify({
-        //   color: 'negative',
-        //   position: 'top',
-        //   message: 'Loading failed',
-        //   icon: 'report_problem'
-        // })
-      })
-  },
-  beforeRouteUpdate (to, from, next) {
-    axios.get('test.json')
-      .then((response) => {
-        this.normal = response.data.normal
-        this.special = response.data.special
-        next()
       })
       .catch(() => {
         next()

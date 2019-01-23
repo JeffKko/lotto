@@ -1,19 +1,31 @@
 <template>
   <q-page class="flex column justify-end" style="padding:0 5vw;">
+
     <q-chat-message
       v-for="(msg, index) in history"
       :key="index"
-      size="8"
-      :sent="msg.role ? true : false"
+      :bg-color="msg.role ? 'grey-4' : 'amber-5'"
+      :sent="msg.role ? false : true"
       :name="msg.role ? '小露露' : '露天小粉絲'"
       :avatar="msg.role ? 'statics/ruru.png' : ''"
       :text="[msg.content]"
-      stamp="2 minutes ago"
+      :stamp="msg.stamp | formatDate"
     />
+
+    <q-chat-message
+      v-if="isLoading"
+      bg-color="grey-4"
+      avatar="statics/ruru.png"
+      name="小露露"
+    >
+      <q-spinner-dots size="2rem" />
+    </q-chat-message>
+
     <div class="row fixed" style="width:90vw;bottom:60px;">
       <q-input class="col-10" dark inverted color="light" v-model="input"></q-input>
       <q-btn class="col-2" icon="send" color="primary" @click="sendMessage"/>
     </div>
+
   </q-page>
 </template>
 
@@ -23,22 +35,47 @@
 <script>
 
 import axios from 'axios'
+import { date } from 'quasar'
 
-const data = [
-  {
-    role: 0,
-    content: '問你一個學校的問題',
-    stamp: ''
-  },
-  {
-    role: 1,
-    content: '問啥校?'
-  },
-  {
-    role: 0,
-    content: '最帥的人是不是劉以豪?'
-  },
-]
+const botAnswer = {
+  win: [
+    '哇哇哇！中獎了！',
+    '唉唷～運氣不錯，中了拉！',
+    '中獎！ 潮爽Der～',
+    'Bingoooooooooo！',
+    'Bingo~~~~~~ la~~~~~ XD',
+    '中了耶，太爽了ㄅ～',
+    '中獎了！該請我吃飯了吧？',
+    '中獎了！還不請我喝飲料？',
+    '中獎了！我早就看好你了拉～',
+    '竟然中了！號碼誰幫你選的啊？',
+    '中了！請大聲念出你的號碼！',
+    '中了！很會選餒吼',
+    '中了中了～ 不枉費公司辛苦栽培你',
+    'wait wait... what? 不對欸... 中獎了！',
+    '中了！比開心更開心的故事！'
+  ],
+  lose: [
+    '哭哭沒中獎～',
+    '再接再厲 加油～',
+    '哇哩咧...沒中獎 再輸入看看',
+    'Oh no... 再加油好嗎💪'
+  ],
+  unready: [
+    '都還沒開獎，對甚麼對！？'
+  ],
+  not4Number: [
+    '叫你輸入四個數字齁'
+  ],
+  else: [
+    '聽說前端有個劉以豪？',
+    '你以為我是機器人嗎？你錯了！',
+    '我不是機器人，我是小露露',
+    '尾牙還要加班，幫你們兌獎... 55555',
+    '你們爽爽吃 爽爽玩 我在公司加班拉...',
+    '誰可以帶volka回公司跟我喝一杯？'
+  ]
+}
 
 
 export default {
@@ -46,10 +83,16 @@ export default {
   beforeRouteEnter (to, from, next) {
     next(vm => vm.scrollToBottom())
   },
+  filters : {
+    formatDate (timeStamp) {
+      return date.formatDate(timeStamp, 'A h:mm')
+    }
+  },
   data () {
     return {
       history: [],
       input: '',
+      isLoading: false
     }
   },
   watch: {
@@ -69,6 +112,7 @@ export default {
   },
   mounted () {
     this.scrollToBottom()
+    // this.$q.localStorage.remove('MESSAGE_HISTORY')
   },
   methods: {
     sendMessage () {
@@ -76,36 +120,40 @@ export default {
 
       const payload = {
         role: 0,
-        content: this.input
+        content: this.input,
+        stamp: new Date().getTime()
       }
       this.history.push(payload)
       this.scrollToBottom()
-      this.botResponce(this.input)
+      this.chechRequest(this.input)
       this.input = ''
     },
-    botResponce (text) {
-      const isLottoNumber = new RegExp(/^\d{4}$/).test(text)
-      if(isLottoNumber) {
-        axios.get('numbers.json')
+    chechRequest (text) {
+      
+      // 輸入4位數獎號
+      if(new RegExp(/^\d{4}$/).test(text)) {
+
+        axios.get(`numbers.json?${new Date().getTime()}`)
           .then((response) => {
-            if(response.data.normal.length) {
-              const normalNumers = response.data.normal
-              let isBingo = normalNumers.filter(number => {
+            const normalNumers = response.data.normal
+            let responseList
+            
+            if(normalNumers.length) {
+              
+              let isBingo = normalNumers.some(number => {
                 number = String(number)
-                return number.substr(0, 3) === text || number.substr(1, 3) === text || number === text
+                return text.indexOf(number.substr(0, 3)) === 0 || text.indexOf(number.substr(1, 3)) === 1 || number === text
               })
 
-              if(isBingo.length) {
-                this.ruruResponce('中獎拉！！！')
-              } else {
-                this.ruruResponce('哭哭沒中獎～')
-              }
-              
+              responseList = isBingo ? botAnswer.win : botAnswer.lose
+
               // vm.normal = response.data.normal
               // vm.special = response.data.special
             } else {
-              this.ruruResponce('都還沒開獎，對甚麼對！')
+              responseList = botAnswer.unready
             }
+
+            this.ruruResponce(responseList[this.randomBetween(0, responseList.length -1)])
           })
           .catch(error => {
             console.log(error)
@@ -115,14 +163,27 @@ export default {
             //   message: 'Loading failed',
             //   icon: 'report_problem'
             // })
+            this.ruruResponce('系統領便當去囉...')
           })
+      // 輸入非4位數獎號
+      } else if(new RegExp(/^(\d)/g).test(text)) {
+        const responseList = botAnswer.not4Number
+        this.ruruResponce(responseList[this.randomBetween(0, responseList.length -1)])
+      // 輸入其他內容
       } else {
-        this.ruruResponce('前端Jeff豪棒棒！')
+        const responseList = botAnswer.else
+        this.ruruResponce(responseList[this.randomBetween(0, responseList.length -1)])
       }
+      
     },
     ruruResponce (text, ignoreSave = false) {
-      this.history.push({role: 1, content: text, ignoreSave})
+      this.isLoading = true
       this.scrollToBottom()
+      setTimeout(() => {
+        this.history.push({role: 1, content: text, stamp: new Date().getTime(), ignoreSave})
+        this.scrollToBottom()
+        this.isLoading = false
+      }, this.randomBetween(300, 1500))
     },
     saveHistory () {
       this.$q.localStorage.set('MESSAGE_HISTORY', [...this.history.filter(item => !item.ignoreSave)])

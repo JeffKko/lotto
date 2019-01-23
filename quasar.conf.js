@@ -68,7 +68,8 @@ module.exports = function (ctx) {
         'QCardActions',
         'QChatMessage',
         'QAjaxBar',
-        'QInput'
+        'QInput',
+        'QSpinnerDots'
       ],
       directives: [
         'Ripple'
