@@ -49,12 +49,6 @@
 import axios from 'axios'
 
 export default {
-  data () {
-    return {
-      normal: null,
-      special: null
-    }
-  },
   beforeRouteEnter (to, from, next) {
     axios.get(`numbers.json?${new Date().getTime()}`)
       .then((response) => {
@@ -72,6 +66,30 @@ export default {
         //   icon: 'report_problem'
         // })
       })
+  },
+  beforeRouteLeave (to, from, next) {
+    clearInterval(this.timer)
+    next()
+  },
+  data () {
+    return {
+      normal: null,
+      special: null,
+      timer: null
+    }
+  },
+  mounted() {
+    this.timer = setInterval(() => {
+      axios.get(`numbers.json?${new Date().getTime()}`)
+        .then((response) => {
+          this.normal = response.data.normal
+          this.special = response.data.special
+        })
+        .catch(() => {
+          
+        })
+    }, 6000)
   }
+  
 }
 </script>

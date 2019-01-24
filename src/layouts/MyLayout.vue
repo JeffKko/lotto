@@ -70,12 +70,14 @@
           to="/numbers"
           exact
           slot="title"
+          label="獎號"
         />
 
         <q-route-tab
           icon="message"
           to="/message"
           slot="title"
+          label="客服"
         />
       </q-tabs>
     </q-layout-footer>

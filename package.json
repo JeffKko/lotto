@@ -1,7 +1,7 @@
 {
   "name": "lotto",
-  "version": "0.0.1",
-  "description": "THE RUTERFEST app",
+  "version": "0.0.2",
+  "description": "The Ruterfest App",
   "productName": "THE RUTERFEST",
   "cordovaId": "org.cordova.quasar.app",
   "author": "",
