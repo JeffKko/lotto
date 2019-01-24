@@ -24,7 +24,7 @@
 
     </q-layout-header>
 
-    <q-layout-drawer
+    <!-- <q-layout-drawer
       v-model="leftDrawerOpen"
       :content-class="$q.theme === 'mat' ? 'bg-grey-2' : null"
     >
@@ -55,7 +55,7 @@
           <q-item-main label="Twitter" sublabel="@quasarframework" />
         </q-item>
       </q-list>
-    </q-layout-drawer>
+    </q-layout-drawer> -->
 
     <q-ajax-bar position="top" size="4px"/>
 
@@ -75,7 +75,6 @@
         <q-route-tab
           icon="message"
           to="/message"
-          exact
           slot="title"
         />
       </q-tabs>

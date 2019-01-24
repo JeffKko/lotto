@@ -53,7 +53,11 @@ const botAnswer = {
     '中了！很會選餒吼',
     '中了中了～ 不枉費公司辛苦栽培你',
     'wait wait... what? 不對欸... 中獎了！',
-    '中了！比開心更開心的故事！'
+    '中了！比開心更開心的故事！',
+    '天哪！太幸運了吧！恭喜得獎啦',
+    'oh my god！這麼幸運的事竟然發生在你身上了！趕快去領獎',
+    '敢相信！你成為幸運得主了！',
+    '有拜有保佑！你竟然如此幸運！太厲害啦！'
   ],
   lose: [
     '哭哭沒中獎～',
@@ -68,7 +72,6 @@ const botAnswer = {
     '叫你輸入四個數字齁'
   ],
   else: [
-    '聽說前端有個劉以豪？',
     '你以為我是機器人嗎？你錯了！',
     '我不是機器人，我是小露露',
     '尾牙還要加班，幫你們兌獎... 55555',
@@ -88,6 +91,7 @@ export default {
       return date.formatDate(timeStamp, 'A h:mm')
     }
   },
+  props: ['q'],
   data () {
     return {
       history: [],
@@ -111,6 +115,14 @@ export default {
     this.ruruResponce('ㄤㄤ打給後，挖喜小露露，輸入四位數獎號窩可以告訴尼有沒有中獎喔！！ ^_^', true)
   },
   mounted () {
+    if(this.$route.query.n) {
+      let n = this.$route.query.n
+      setTimeout(() => {
+        this.input = n
+        this.sendMessage()
+      }, 1001)
+      this.$router.replace({ path: 'message'})
+    }
     this.scrollToBottom()
     // this.$q.localStorage.remove('MESSAGE_HISTORY')
   },
@@ -129,7 +141,7 @@ export default {
       this.input = ''
     },
     chechRequest (text) {
-      
+
       // 輸入4位數獎號
       if(new RegExp(/^\d{4}$/).test(text)) {
 
@@ -137,9 +149,9 @@ export default {
           .then((response) => {
             const normalNumers = response.data.normal
             let responseList
-            
+
             if(normalNumers.length) {
-              
+
               let isBingo = normalNumers.some(number => {
                 number = String(number)
                 return text.indexOf(number.substr(0, 3)) === 0 || text.indexOf(number.substr(1, 3)) === 1 || number === text
@@ -174,7 +186,7 @@ export default {
         const responseList = botAnswer.else
         this.ruruResponce(responseList[this.randomBetween(0, responseList.length -1)])
       }
-      
+
     },
     ruruResponce (text, ignoreSave = false) {
       this.isLoading = true
@@ -183,7 +195,7 @@ export default {
         this.history.push({role: 1, content: text, stamp: new Date().getTime(), ignoreSave})
         this.scrollToBottom()
         this.isLoading = false
-      }, this.randomBetween(300, 1500))
+      }, this.randomBetween(300, 1000))
     },
     saveHistory () {
       this.$q.localStorage.set('MESSAGE_HISTORY', [...this.history.filter(item => !item.ignoreSave)])

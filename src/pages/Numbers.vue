@@ -5,7 +5,7 @@
         開獎號碼
       </q-card-title>
       <q-card-separator />
-      <q-list>
+      <q-list v-if="normal && normal.length">
         <q-item :key="'item' + index" v-for="(item, index) in normal">
           <q-item-side>
             <q-item-tile color="amber-9" icon="stars" />
@@ -15,6 +15,11 @@
           </q-item-main>
         </q-item>
       </q-list>
+      <q-list v-else>
+        <q-item>
+          尚未開出任何獎號！
+        </q-item>
+      </q-list>
     </q-card>
     <q-card style="width: 80vw;">
       <q-card-title>
@@ -22,7 +27,7 @@
       </q-card-title>
       <q-card-separator />
       <q-list>
-        <q-item>
+        <q-item v-if="special">
           <q-item-side>
             <q-item-tile color="amber-9" icon="stars" />
           </q-item-side>
@@ -30,6 +35,7 @@
             {{special}}
           </q-item-main>
         </q-item>
+        <q-item v-else>尚未開出特獎！</q-item>
       </q-list>
     </q-card>
   </q-page>
